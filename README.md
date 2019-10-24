@@ -1,6 +1,6 @@
-# Maestria en Ciencia de los Datos
+# Maestría en Ciencia de los Datos: 2019-II
 
-# Proyecti integrador: Coeficiente de fidelización al medio de pago tarjeta crédito
+# Proyecto integrador: Coeficiente de fidelización al medio de pago tarjeta crédito
 
 Nuestra propuesta de proyecto integrador se enfoca en obtener un coeficiente de fidelización en el uso de tarjeta de crédito, que permita identificar el número mínimo de transacciones mensuales realizadas con la tarjeta por un cliente para que esta se convierta en el medio de pago recurrente.
 
