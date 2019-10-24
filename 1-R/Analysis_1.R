@@ -11,3 +11,15 @@ library(dplyr)
 
 data_full<- read_delim("Base_modelo.csv",
                          ";", escape_double = FALSE, trim_ws = TRUE)
+
+#Estructura de la base
+
+str(data_full)
+
+#Nombres de las columnas
+names(data_full)
+
+#Resumen de la base
+summary(data_full)
+
+#Seleccion de las columnas numericas para el análisis
