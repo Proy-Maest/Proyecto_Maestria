@@ -19,3 +19,39 @@ Tomando una muestra de clientes de una entidad bancaria, se quiere identificar s
 - Segmentar los clientes por su historial de transaccionalidad con la entidad
 - Estimar qué variables inciden en el aumento de la frecuencia de transacciones
 - Fortalecer estrategias de fidelización
+
+
+## Modelamiento
+
+## Segmentación mediante el uso de K-MEANS
+
+Hoy en día para cualquier empresa,  segmentar es una manera de dividir un problema en partes más sencillas que ayuda a priorizar esfuerzos y a localizar oportunidades de negocio.
+
+Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas capacidades adquisitivas por lo tanto, es importante entender e identificar valor de grupos de individuos.
+
+**Definición**
+Segmentar es dividir una población en grupos homogéneos en función de necesidades, comportamientos, características o actitudes y caracterizar a los grupos resultantes para saber qué les distingue entre sí.
+
+# Aplicación para el caso de estudio
+
+Con la metodología K-Means se desea responder algunas preguntas de negocio que son importantes para la creación de estrategias para el aumento de valor de la compañia.
+
+Con K-Means se quiere responder los siguientes cuestionamientos.
+
+- Identificar el tipo de clientes
+- ¿Cuál es el medio de pago mas utilizado?
+- ¿Cuál es el canal mas utilizado?
+- ¿Cuáles son las características de los clientes que tienen mas transacciones en el año?
+- ¿Cuáles clientes son mas propensos en dejar de pagar con tarjeta?
+
+# Desarrollo
+
+Para realizar el modelo los clientes deben tener como mínimio una transacción acumulada  y luego se seleccionan las variables numéricas del dataset para la clusterización.
+
+Se segmentó de acuerdo a:
+- Edad
+- Rango Ingresos
+- Monto transado
+- Total trx acumuladas
+
+
