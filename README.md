@@ -1,6 +1,11 @@
 # Maestría en Ciencia de los Datos 2019-II
 
-# Karen Lizeth Velásquez Moná - Ana María Uran González - Daniel Román Ramírez - Daniel Enrique Pinto Restrepo - Carlos Alberto Cerro Espinal
+#Integrantes
+- Karen Lizeth Velásquez Moná 
+- Ana María Uran González 
+- Daniel Román Ramírez 
+- Daniel Enrique Pinto Restrepo 
+- Carlos Alberto Cerro Espinal
 
 # Proyecto integrador: Segmentación de clientes según su transaccionalidad
 
