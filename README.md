@@ -1,6 +1,6 @@
 # Maestría en Ciencia de los Datos 2019-II
 
-#Integrantes
+# Integrantes
 - Karen Lizeth Velásquez Moná 
 - Ana María Uran González 
 - Daniel Román Ramírez 
