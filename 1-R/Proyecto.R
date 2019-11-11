@@ -35,7 +35,7 @@ data1<-data_full %>% filter(Rango_ingresos_acum %in% (450000:90000000))
 
 data1$Hijos<- gsub("[?]",'0', data1$Hijos)
 
-#El monto transado debe ser mayor que cero
+#El monto transado debe ser mayor que cero.
 
 data2<-data1 %>% filter(Monto_transado != 0 )
 
