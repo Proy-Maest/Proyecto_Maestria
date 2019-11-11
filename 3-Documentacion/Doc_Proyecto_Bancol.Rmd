@@ -1,0 +1,449 @@
+---
+title: "Proyecto integrador: Versión 1.0"
+author: "Karen Lizeth Velásquez Moná - Ana María Uran González - Daniel Román Ramírez - Daniel Enrique Pinto Restrepo - Carlos Alberto Cerro Espinal"
+date: "Semestre II -2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Segmentación de clientes según su transaccionalidad
+
+## Oportunidad
+
+Actualmente el sistema financiero cuenta con una penetración de tarjetas de crédito del 57,3% en la población bancarizada de Colombia, según estudio realizado por la compañía Minsait por medio de su informe Tendencias en Medios de Pago 2018. Lo cual lleva a la industria a tener grandes retos a nivel de facturación y mejoramiento del servicio, fomentando el uso del dinero plástico. De acuerdo a información de la Superintendencia Financiera de Colombia, el país cuenta con alrededor de 15 millones de plásticos vigentes emitidos, siendo el cuarto país entre 18 países latinoamericanos con mayor número de plásticos.
+
+Tomando una muestra de clientes de una entidad bancaria, se quiere identificar segmentos para desarrollar estrategias particulares dependiendo de las características de cada grupo.
+Estas estrategias pueden ser de fidelización a largo plazo, adquisición de nuevos servicios, aumento de frecuencia del uso de tarjeta de crédito, entre otras.
+
+## Objetivo
+
+- Segmentar los clientes por su historial de transaccionalidad con la entidad
+- Estimar qué variables inciden en el aumento de la frecuencia de transacciones
+- Fortalecer estrategias de fidelización 
+
+## Desarrollo
+
+## Descripción de la base
+
+Se tiene una base de clientes simulada de una entidad bancaria X, la cual consta del historial transaccional desde el segundo semestre del 2017 hasta el primer semestre del 2019. 
+
+Esta base cuenta con 4.999 clientes, cuenta con información demográfica y transaccional.
+
+**Directorio de trabajo**
+
+```{r}
+setwd("D:/Usuarios/danirorm/Seguros Suramericana, S.A/PROYECTO_MAESTRIA_EAFIT - General/3-Data")
+```
+
+**Importación de los datos**
+
+```{r}
+#librerias
+library(readr)
+library(dplyr)
+library(plotly)
+library(PerformanceAnalytics)
+library(cluster)
+library(factoextra)
+library(tidyverse)
+library(ggpubr)
+#importar data
+options("scipen"=100, "digits"=4)
+data_full<- read_delim("Base_modelo.csv",
+                         ";", escape_double = FALSE, trim_ws = TRUE)
+```
+
+**Estructura de la base**
+
+```{r}
+#Estructura de la base
+
+str(data_full)
+dim(data_full)
+#Nombres de las columnas
+names(data_full)
+```
+
+## Limpieza de la base de datos
+
+Se evidencia una fuerta presencia de registros faltantes identificados como **"-1"** o **?**. Según el conocimiento del experto estos datos se clasifican como NA'S. 
+
+Se crearán funciones con el objetivo de identificar estos datos y analizarlos.
+
+## Función para determinar el porcentaje de datos faltantes en el dataset
+
+```{r}
+# Función usada para determinar el porcentaje de datos faltantes en un set de datos
+missingData <- function(data) {
+  
+  print("Porcentaje NA's en cada Columna")
+  
+  # Porcentaje de NA's en cada Columna
+  porcNA <- round(sapply(data, function(y) sum(is.na(y)))/nrow(data)*100, 2)
+  print(porcNA[porcNA > 0])
+  
+  print("Porcentaje de Registros con valor de -1 en cada columna")
+  
+  # Porcentaje de Variables sin Información en Cada Columna
+  porcSinInf <- round(sapply(data, function(y) sum(as.character(y) == '-1', na.rm = T))/nrow(data)*100, 2)
+  print(porcSinInf[porcSinInf > 0])
+  
+  print("Porcentaje de Registros con valor de ? en cada columna")
+  
+  # Porcentaje de Variables sin Información en Cada Columna
+  porcSinInf <- round(sapply(data, function(y) sum(as.character(y) == '?', na.rm = T))/nrow(data)*100, 2)
+  print(porcSinInf[porcSinInf > 0])
+  
+}
+```
+
+## Data Cleaning
+
+Para empezar la limpieza de los datos, se debe conocer como estan los datos con un summary de la base. 
+
+```{r}
+#Resumen de la base
+summary(data_full)
+```
+
+Al ver el resumen de la base , se evidencia observaciones que se salen del pormedio y que son minoría de la muestra obtenida por lo tanto se contextualiza con el conocimiento del experto y se filtra por rango de ingresos y  así tendremos mas exactitud  en los resultados de la población estudiada.
+
+**Se filtra por rango de ingresos acumulados año entre 450 mil y 90 millones, luego el nuevo data set queda como data1**
+
+```{r}
+#Rango de ingresos acumulados al año entre 450 mil y 90 millones
+
+data1<-data_full %>% filter(Rango_ingresos_acum %in% (450000:90000000))
+
+```
+
+**Identificación de caracteres especiales**
+
+
+**Función para encontrar el porcentaje de missing data**
+```{r}
+missingData(data1)
+
+
+```
+
+En la columna **Hijos** se identifica caracteres como **?**
+
+```{r}
+head(data1$Hijos)
+```
+
+Se evidencia que el 77,07% de los registros tienen el caracter especial de **"?"** , como no se pueden eliminar sin ser tratados se pueden guardar en una base para luego analizarlos y mejorar los datos pero por ahora no se trabajaran con estos registros NA'S.
+
+Datos con **"?"**
+```{r}
+datosconsigno<-data1 %>% filter(Hijos=="?")
+dim(datosconsigno)
+```
+
+**Nuevo dataset = data1**
+
+```{r}
+data1<-data1 %>% filter(Hijos!="?")
+```
+
+**El monto transado debe ser mayor que cero, data2 nuevo dataset**
+
+```{r}
+data2<-data1 %>% filter(Monto_transado != 0 )
+```
+
+
+## Análisis de la distribución de la edad
+
+**Edad**
+
+```{r}
+# Ahora vamos a analizar como se  distribuye la poblacion
+plot_ly(data2, x = ~Edad, type = "histogram")%>% config(displayModeBar = F)
+```
+
+La población de estudio esta entre 25 y 60 años
+
+```{r}
+#la poblacion estudio esta entre 25 y 60 años
+data3<-data2 %>% filter(Edad %in% (25:60))
+#histograma
+plot_ly(data3, x = ~Edad, type = "histogram")%>% config(displayModeBar = F)
+#boxplot
+plot_ly(data3, y = ~Edad, type = "box")
+```
+
+**Nuevo dataset =  data3**
+
+## Análisis de las variables categóricas
+
+Distribución por género
+
+```{r}
+#Distribucion por genero
+table(data3$Sexo)
+
+sort(prop.table(table(data3$Sexo))*100, decreasing = T)
+```
+
+Se evidencia en la poblacion que el 53.22% son Hombres y el 46.7% son Mujeres.
+
+**Nivel de estudio**
+
+```{r}
+#Distribución por Nivel estudio
+table(data3$Nivel_estudio)
+sort(prop.table(table(data3$Nivel_estudio))*100, decreasing = T)
+plot_ly(data3, x = ~Nivel_estudio, type = "histogram")%>% config(displayModeBar = F)
+```
+
+Se evidencia una participación del 56,8% de personas que tienen nivel de estudios con especialización.
+
+**Estado civil**
+
+```{r}
+#Estado civil
+table(data3$Estado_civil)
+sort(prop.table(table(data3$Estado_civil))*100, decreasing = T)
+```
+
+**Participación por Departamento**
+
+```{r}
+#Departamento
+table(data3$Departamento)
+sort(prop.table(table(data3$Departamento))*100, decreasing = T)
+```
+
+Se evidencia mayor participación en los departamentos de Bogotá D.C y Antioquia respectivamente.
+
+**Partipacipación por franquicias**
+
+```{r}
+#Franquicias
+table(data3$Franquicia)
+sort(prop.table(table(data3$Franquicia))*100, decreasing = T)
+plot_ly(data3, x = ~Franquicia, type = "histogram")%>% config(displayModeBar = F)
+
+```
+
+Con una participación del 57,5% Visa es la franquicia que registra mas transacciones acumuladas en los usuarios entre el 2017 y el 2019.
+
+**Canal**
+
+```{r}
+#Canal
+table(data3$canal)
+sort(prop.table(table(data3$canal))*100, decreasing = T)
+```
+
+Se evidencia mayor participación en pagos presenciales (54,7%) en comparación por pagos en internet (45,1%).
+
+**Distribución por canal según el nivel de estudio**
+
+**Medio de pago Presente**
+
+```{r}
+data_p<-data3 %>% filter(canal=="P")
+data_I<-data3 %>% filter(canal=="I")
+
+plot_ly(data_p, x = ~Nivel_estudio,  y= ~canal, type = "histogram")%>% config(displayModeBar = F)
+```
+
+**Medio de pago Internet**
+
+```{r}
+plot_ly(data_I, x = ~Nivel_estudio,  y= ~canal, type = "histogram")%>% config(displayModeBar = F)
+```
+
+Las personas que tienen además de un pregrado otros estudios, tienden a usar mas el internet como medio de pago con el uso de las tarjetas de crédito.
+
+**Origen**
+
+```{r}
+#Origen
+table(data3$origen)
+sort(prop.table(table(data3$origen))*100, decreasing = T)
+```
+
+**Distribución por estrato**
+
+```{r}
+table(data3$Estrato)
+sort(prop.table(table(data3$Estrato))*100, decreasing = T)
+plot_ly(data3, x = ~Estrato, type = "histogram")%>% config(displayModeBar = F)
+```
+
+La gran población esta entre estrato 4 y 6
+
+**Reclamos acumulados**
+
+```{r}
+table(data3$Reclamos)
+sort(prop.table(table(data3$Reclamos))*100, decreasing = T)
+plot_ly(data3, x = ~Reclamos, type = "histogram")%>% config(displayModeBar = F)
+```
+
+**Distribución por hijos**
+
+```{r}
+#hijos
+plot_ly(data3, y = ~Hijos, type = "box", name = "Num Hijos")
+plot_ly(data3, x = ~Hijos, type = "histogram")%>% config(displayModeBar = F)
+```
+
+**Distribución por total de transacciones acumuladas**
+```{r}
+#Distribucion del total de trx acum
+plot_ly(data3, x = ~Total_trx, type = "histogram")%>% config(displayModeBar = F)
+```
+
+## Correlaciones entre las variables numéricas
+
+Para mirar la relación entre las variables numéricas, se realizará un análisis con **la matriz de correlaciones**.
+
+Este análisis aporta el conocimiento de las relaciones directas o indirectas con el aumento de la frecuencia de transacciones de las personas.
+
+Correlación todas las variables
+```{r}
+cor(select(data3, "Edad", "Rango_ingresos_acum", "Monto_transado", "Total_trx"))
+```
+
+Cuando se realiza el análisis de correlaciones entre todas las variables se evidencia una fuerte correlación positiva entre **monto transado** y **Rango de ingresos,** lo cual tiene coherencia entre más ingresos tiene la persona gastará mas.
+
+Adicionalmente se observa que la edad no tiene fuerte correlación con ninguna de las variables, podemos decir que la edad no es un factor significativo a la hora de saber si la persona tiene mas capacidad adquisitiva y por lo tanto sus transacciones aumentarán.
+**Matriz gráfica**
+```{r}
+chart.Correlation(select(data3, "Edad", "Rango_ingresos_acum", "Monto_transado", "Total_trx"),histogram = TRUE, pch=19)
+```
+
+**Correlaciones dejando fija la variable Total_trx**
+
+**Total_trx vs Edad**
+
+```{r}
+cor(select(data3, "Total_trx","Edad"))
+chart.Correlation(select(data3, "Edad", "Total_trx"),histogram = TRUE, pch=19)
+
+```
+
+**Total_trx vs Rango_ingresos_acum**
+
+```{r}
+cor(select(data3, "Total_trx","Rango_ingresos_acum"))
+chart.Correlation(select(data3,  "Rango_ingresos_acum","Total_trx"),histogram = TRUE, pch=19)
+```
+
+**Total_trx vs Monto_transado**
+
+```{r}
+cor(select(data3, "Total_trx","Monto_transado"))
+chart.Correlation(select(data3, "Monto_transado","Total_trx"),histogram = TRUE, pch=19)
+```
+
+Por lo anterior, se puede evidenciar que ni la edad, el rango de ingresos o el monto transado son variables que estan directamente relacionadas con las transacciones acumuladas.
+
+## Modelamiento
+
+## Segmentación mediante el uso de K-MEANS
+
+Hoy en día para cualquier empresa,  segmentar es una manera de dividir un problema en partes más sencillas que ayuda a priorizar esfuerzos y a localizar oportunidades de negocio.
+
+Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas capacidades adquisitivas por lo tanto, es importante entender e identificar valor de grupos de individuos.
+
+**Definición**
+Segmentar es dividir una población en grupos homogéneos en función de necesidades, comportamientos, características o actitudes y caracterizar a los grupos resultantes para saber qué les distingue entre sí.
+
+**Aplicación para el caso de estudio**
+
+Con la metodología K-Means se desea responder algunas preguntas de negocio que son importantes para la creación de estrategias para el aumento de valor de la compañia.
+
+Con K-Means se quiere responder los siguientes cuestionamientos.
+
+- Identificar el tipo de clientes
+- ¿Cuál es el medio de pago mas utilizado?
+- ¿Cuál es el canal mas utilizado?
+- ¿Cuáles son las características de los clientes que tienen mas      transacciones en el año?
+- ¿Cuáles clientes son mas propensos en dejar de pagar con tarjeta?
+
+**Desarrollo**
+
+Para realizar el modelo los clientes deben tener como mínimio una transacción acumulada  y luego se seleccionan las variables numéricas del dataset para la clusterización.
+
+Se segmento de acuerdo a:
+- Edad
+- Rango Ingresos
+- Monto transado
+- Total trx acumuladas
+
+```{r}
+# transacciones mayores que cero
+data3<-data3 %>% filter(Total_trx>0) 
+
+#Selección del k optimo = 3: edad, rango_ingresos, monto, total trx
+fviz_nbclust(data3[,c(5,9,14,41)], kmeans, method = "gap_stat")
+
+
+```
+
+**Modelo con k=3**
+
+```{r}
+#modelo kmeans
+ModeloKMEANS <- kmeans(data3[,c(5,9,14,41)],3)
+ModeloKMEANS
+```
+
+**Gráfica del modelo**
+
+```{r}
+
+km.res <- kmeans(data3[,c(5,9,14,41)], 3)
+
+fviz_cluster(km.res, data = data3[,c(5,9,14,41)], frame.type = "convex")
+
+```
+
+**Distribución de clusters**
+
+```{r}
+cluster<-km.res$cluster
+cluster
+
+```
+
+**Creación de la columna Cluster para el dataset y distribución por grupo**
+
+```{r}
+data3$Grupo_cluster <- ModeloKMEANS$cluster
+
+table(data3$Grupo_cluster)
+sort(prop.table(table(data3$Grupo_cluster))*100, decreasing = T)
+
+```
+
+Se realizó una segmentación con un k óptimo = 3, donde el grupo 2 tiene mayor participación del 59,9%, mientras que el grupo 1 tiene el 29,9% y el el grupo 3 con una participación del 10,13% según la cantidad de la población seleccionada.
+
+**Estadísticas por cada cluster**
+
+```{r}
+G1<-data3 %>% select(Edad, Rango_ingresos_acum, Monto_transado, Total_trx,Grupo_cluster) %>% filter(Grupo_cluster==1)
+summary(G1)
+
+G2<-data3 %>% select(Edad, Rango_ingresos_acum, Monto_transado, Total_trx,Grupo_cluster) %>% filter(Grupo_cluster==2)
+summary(G2)
+
+G3<-data3 %>% select(Edad, Rango_ingresos_acum, Monto_transado, Total_trx,Grupo_cluster) %>% filter(Grupo_cluster==3)
+summary(G3)
+```
+
+Se observa que el cluster 1, cuenta con clientes que han tenido un máximo de transacciones de 3078 y con montro máximo transado de mas de 400 millones, se podría decir que las personas que están en este grupo son mas propensas a transar mas y sus gastos son mayores, por lo tanto este sería el grupo potencial para fortalecer lazos comerciales y adquision de nuevos productos.
+
+Con el cluster 2 y 3, tiene caracteristicas similares , pero adicional a esto, existen clientes que son más propensos a gastar menos por lo tanto el monto transado es menor. Estos clientes se tendrían que mirar con mayor detenimiendo si se quiere que ellos aumenten el número de transacciones y que no se fugen, se debe crear estrategias de fidelación y negociación de tarifas.
+
+
+
