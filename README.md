@@ -30,6 +30,7 @@ Hoy en día para cualquier empresa,  segmentar es una manera de dividir un probl
 Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas capacidades adquisitivas por lo tanto, es importante entender e identificar valor de grupos de individuos.
 
 **Definición**
+
 Segmentar es dividir una población en grupos homogéneos en función de necesidades, comportamientos, características o actitudes y caracterizar a los grupos resultantes para saber qué les distingue entre sí.
 
 # Aplicación para el caso de estudio
