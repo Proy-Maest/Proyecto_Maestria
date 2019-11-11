@@ -1,6 +1,7 @@
 #                           Maestria en ciencia de los Datos
 #                               Proyecto Integrador
-#                              Coeficiente de fidelización al medio de pago tarjeta crédito
+#                    Segmentación de clientes según su transaccionalidad
+#                                K-Means
 #directorio de trabajo
 
 setwd("D:/Usuarios/danirorm/Seguros Suramericana, S.A/PROYECTO_MAESTRIA_EAFIT - General/3-Data")
