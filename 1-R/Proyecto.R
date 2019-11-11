@@ -197,7 +197,6 @@ summary(G3)
 
 
 
-#Descargamos el archivo
-#write.csv(data_mod2, file = "data_cluster.csv")
+
 
 
