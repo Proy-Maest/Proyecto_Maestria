@@ -33,6 +33,9 @@ Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas c
 
 Segmentar es dividir una población en grupos homogéneos en función de necesidades, comportamientos, características o actitudes y caracterizar a los grupos resultantes para saber qué les distingue entre sí.
 
+
+Dado un conjunto de observaciones (\x_1, \x_2, …, \x_n), donde cada observación es un vector real de d dimensiones, k-medias construye una partición de las observaciones en k conjuntos (k ≤ n) a fin de minimizar la suma de los cuadrados dentro de cada grupo (WCSS): S = {\S_1, \S_2, …, \S_k}
+
 # Aplicación para el caso de estudio
 
 Con la metodología K-Means se desea responder algunas preguntas de negocio que son importantes para la creación de estrategias para el aumento de valor de la compañia.
