@@ -37,6 +37,8 @@ Segmentar es dividir una población en grupos homogéneos en función de necesid
 Dado un conjunto de observaciones (X1, X2, …, Xn), donde cada observación es un vector real de d dimensiones, k-medias construye una partición de las observaciones en k conjuntos (k ≤ n) a fin de minimizar la suma de los cuadrados dentro de cada grupo (WCSS): 
 S = {S1, S2, …, Sk}
 
+  ![](DEFINICION_1.png)
+
 # Aplicación para el caso de estudio
 
 Con la metodología K-Means se desea responder algunas preguntas de negocio que son importantes para la creación de estrategias para el aumento de valor de la compañia.
