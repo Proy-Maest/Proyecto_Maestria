@@ -50,6 +50,12 @@ S = {S1, S2, …, Sk}
 
 Los métodos de inicialización de Forgy y Partición Aleatoria son comúnmente utilizados.El método Forgy elige aleatoriamente k observaciones del conjunto de datos y las utiliza como centroides iniciales. El método de partición aleatoria primero asigna aleatoriamente un clúster para cada observación y después procede a la etapa de actualización, por lo tanto calcular el clúster inicial para ser el centro de gravedad de los puntos de la agrupación asignados al azar. El método Forgy tiende a dispersar los centroides iniciales, mientras que la partición aleatoria ubica los centroides cerca del centro del conjunto de datos. Según Hamerly y compañía, el método de partición aleatoria general, es preferible para los algoritmos tales como los k-medias armonizadas y fuzzy k-medias. Para expectation maximization y el algoritmo estándar el método de Forgy es preferible.
 
+# Resultados
+
+![K-óptimo](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/k_means_1.png)
+
+![Segmentación K-Means](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/kmeans_1.png)
+
 **Referencia: https://es.wikipedia.org/wiki/K-medias**
 
 # Clasificación modelo PAM (Partitioning Around Medoids)
@@ -88,6 +94,12 @@ Es una función que se utiliza cuando se tienen variables mixtas (numéricas y c
 •	Se minimiza una distancia:
 
 ![Minimiza la distancia](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/distancia_min.png)
+
+## Resultados
+
+![K-óptimo](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/k_optimo.png)
+
+![Clasificación PAM](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/PAM.png)
 
 **Referencia: https://rpubs.com/Joaquin_AR/310338**
 
