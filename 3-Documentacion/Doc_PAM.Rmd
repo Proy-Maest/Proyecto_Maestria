@@ -1,0 +1,302 @@
+---
+title: "Clasificación modelo PAM (Partitioning Around Medoids)"
+author: "Karen Lizeth Velásquez Moná - Ana María Uran González - Daniel Román Ramírez - Daniel Enrique Pinto Restrepo - Carlos Alberto Cerro Espinal"
+date: "Noviembre de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introducción
+
+K-medoids es un método de clustering muy similar a K-means ya que ambos agrupan las observaciones en K clusters, donde K es un valor preestablecido por quien lo estudio. La diferencia es que, en K-medoids, cada cluster está representado por una observación presente en el cluster (medoid), mientras que en K-means cada cluster está representado por su **centroide**, que se corresponde con el promedio de todas las observaciones del cluster pero con ninguna en particular.
+
+Específicamente la definición de **metoid** es el  elemento dentro de un cluster cuya distancia (diferencia) promedio entre él y todos los demás elementos del mismo cluster es lo menor posible. Se corresponde con el elemento más central del cluster y por lo tanto puede considerarse como el más representativo. El hecho de utilizar medoids en lugar de centroides hace de K-medoids un método más robusto que K-means, viéndose menos afectado por outliers o ruido. A modo de idea intuitiva puede considerarse como la analogía entre media y mediana.
+
+## Pasos para el desarrollo del método
+
+- Seleccionar K observaciones aleatorias como medoids iniciales.
+- Calcular la matriz de distancia entre todas las observaciones
+- Asignar cada observación a su medoid más cercano
+- Para cada uno de los clusters creados, comprobar si seleccionando otra observación como medoid se consigue reducir la distancia del cluster, si esto ocurre, seleccionar la observación que consigue una mayor reducción como nuevo medoid.
+
+- Si al menos un medoid ha cambiado en el paso 4, volver al paso 3, de lo    contrario, se termina el proceso.
+
+## Ventajas y Desventajas
+
+- K - medoids es un método de clustering más robusto que K-means, por lo es más adecuado cuando el set de datos contiene outliers o ruido.
+
+- Necesita que se especifique el número de clusters que se van a crear. Esto puede ser complicado de determinar si no se dispone de información adicional sobre los datos. 
+
+- Para sets de datos grandes necesita muchos recursos computacionales. En tal situación se recomienda aplicar el método CLARA.
+
+**Referencia bibliográfica**
+
+https://rpubs.com/Joaquin_AR/310338
+
+## Desarrollo
+Directorio de trabajo
+
+```{r}
+setwd("D:/Usuarios/danirorm/Seguros Suramericana, S.A/PROYECTO_MAESTRIA_EAFIT - General/1-R")
+
+```
+
+Partimos de una base con 40 variables y 4,999 observaciones, sobre la cual predominan variables transaccionales haciendo referencia al número de transacciones mensuales realizadas por los clientes desde el mes 6 del año 2017.
+Durante esta etapa utilizaremos la herramienta R como una opción de exploración de modelos, con el fin de seleccionar los modelos que se ajusten a la solución del problema.
+A continuación se presenta resumen extraído desde la herramienta sobre la base inicial:
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(Hmisc)
+library(corrplot)
+library(PerformanceAnalytics)
+#library(caret)
+#library(rlang)
+library(readr)
+library(cluster)
+library(Rtsne)
+
+#Base Inicial
+BASE <-read_delim("D:/Usuarios/danirorm/Seguros Suramericana, S.A/PROYECTO_MAESTRIA_EAFIT - General/1-R/Base_modelo.csv", 
+                     ";", escape_double = FALSE, trim_ws = TRUE)
+```
+
+
+## Exploración de los datos
+
+```{r}
+summary(BASE)
+```
+
+
+Dentro de la base se identifican 27 variables numéricas asociadas al número de reclamos y la cantidad de transacciones realizadas en cada periodo.
+Adicionalmente, se identifican 13 variables categóricas asociadas a las variables de Sexo, Estrato, Grupo Valor, Rango de ingresos, Nivel de estudio, Estado Civil, Departamento, Edad, Hijos, Franquicia, Canal, Origen, Monto Transado.
+De acuerdo a lo anterior para las variables numéricas generamos una estandarización, para llevar las variables a un rango estándar con el fin de que estas oscilen entre 0 y 1; por lo cual se resta al valor mínimo sobre el valor máximo menos el valor mínimo de las variables.
+
+## Funciones para el modelo
+
+```{r}
+###Creacion de funcion
+
+# enumerate linear combinations
+enumLC <- function(object, ...) UseMethod("enumLC")
+
+#' @export
+enumLC.default <- function(object, ...)
+{
+  # there doesn't seem to be a reasonable default, so
+  # we'll throw an error
+  stop(paste('enumLC does not support ', class(object), 'objects'))
+}
+
+enumLC.matrix <- function(object, ...)
+{
+  # factor the matrix using QR decomposition and then process it
+  internalEnumLC(qr(object))
+}
+
+enumLC.lm <- function(object, ...)
+{
+  # extract the QR decomposition and the process it
+  internalEnumLC(object$qr)
+}
+
+#' @importFrom stats lm
+enumLC.formula <- function(object, ...)
+{
+  # create an lm fit object from the formula, and then call
+  # appropriate enumLC method
+  enumLC(lm(object))
+}
+
+# this function does the actual work for all of the enumLC methods
+internalEnumLC <- function(qrObj, ...)
+{
+  R <- qr.R(qrObj)                     # extract R matrix
+  numColumns <- dim(R)[2]              # number of columns in R
+  rank <- qrObj$rank                   # number of independent columns
+  pivot <- qrObj$pivot                 # get the pivot vector
+  
+  if (is.null(numColumns) || rank == numColumns)
+  {
+    list()                            # there are no linear combinations
+  } else {
+    p1 <- 1:rank
+    X <- R[p1, p1]                    # extract the independent columns
+    Y <- R[p1, -p1, drop = FALSE]     # extract the dependent columns
+    b <- qr(X)                        # factor the independent columns
+    b <- qr.coef(b, Y)                # get regression coefficients of
+    # the dependent columns
+    b[abs(b) < 1e-6] <- 0             # zap small values
+    
+    # generate a list with one element for each dependent column
+    lapply(1:dim(Y)[2],
+           function(i) c(pivot[rank + i], pivot[which(b[,i] != 0)]))
+  }
+}
+
+findLinearCombos <- function(x)
+{
+  if(!is.matrix(x)) x <- as.matrix(x)
+  lcList <- enumLC(x)
+  initialList <- lcList
+  badList <- NULL
+  if(length(lcList) > 0)
+  {
+    continue <- TRUE
+    while(continue)
+    {
+      # keep removing linear dependencies until it resolves
+      tmp <- unlist(lapply(lcList, function(x) x[1]))   
+      tmp <- unique(tmp[!is.na(tmp)])
+      badList <- unique(c(tmp, badList))
+      lcList <- enumLC(x[,-badList, drop = FALSE])
+      continue <- (length(lcList) > 0)
+    }
+  } else badList <- NULL
+  list(linearCombos = initialList, remove = badList)
+}
+
+```
+
+
+
+
+**Construcción del modelo**
+
+Se extrae los ID de la base, y queda guardado en BASE_ID y se trabaja la base sin el ID.
+
+```{r}
+#Extraemos el ID
+BASE_ID <- BASE[1]
+
+#Base solo con variables
+
+BASE <- BASE[,-1]
+
+BASE$Estrato <- as.factor(BASE$Estrato)
+BASE$Edad <- as.factor(BASE$Edad)
+
+summary(BASE)
+```
+
+**Transformación de los datos**
+
+```{r}
+BASE_num <- BASE[sapply(BASE, is.numeric)]
+BASE_cat <- BASE[sapply(BASE, is.factor)]
+```
+
+
+```{r}
+for(i in 1:ncol(BASE_num)){
+  BASE_num[,i] = ((BASE_num[,i])-min(BASE_num[,i])/(max(BASE_num[,i]))-(min(BASE_num[,i])))
+}
+```
+
+## Unificación de variables
+
+A través de la función findLinearCombos se busca encontrar la colinealidad entre las diferentes variables.
+Correlación entre las variables que hacen referencias a la cantidad de transacciones 
+```{r}
+comboinfo <- findLinearCombos(BASE_num)
+comboinfo
+```
+
+
+Sugiere eliminar la variable 27 Total de transacciones, ya que esta corresponde a la suma de todos los periodos de las transacciones realizadas; por lo anterior se remueve la variable.
+
+```{r}
+#View(BASE)
+N_BASE_num <- BASE_num[, -comboinfo$remove]
+comboinfo <- findLinearCombos(N_BASE_num)
+```
+
+Con el fin de encontrar un modelo indicado se prueba el modelo PAM (Partitioning Around Medoids), todos los modelos de segmentación tratan de resolver el mismo problema de minimizar una diferencia de distancias calculadas, este modelo es muy parecido al algoritmo de k-means la diferencia principal es que PAM está calculado con medioides mientras que K-medias lo hace sobre centroides.
+
+## Partitioning Around Medoids
+
+- Se calcula la distancia de las observaciones con la función Daisy:
+
+
+ ![](formula_1.png)
+ 
+ 
+ 
+Es una función que se utiliza cuando se tienen variables mixtas (numéricas y categóricas), donde la métrica con la cual se obtienen las distancias es “gower”.
+
+
+- Se minimiza una distancia
+
+Para este modelo se obtiene que la mejor silueta puede estar asociada a 4 grupos, la cual minimiza la distancia a cada objeto (Medioides) minimizados por la distancia de gower, indicado que la distancia mínima es de 0.08.
+
+![](formula2.png)
+
+
+
+```{r}
+# dist_grid<- daisy(BASE,metric = "gower")
+# d_matrix <- as.matrix(dist_grid)
+# 
+# sil_width <- c(NA)
+# 
+# for(i in 2:15){
+#   pam_fit <- pam(dist_grid,
+#                  diss = TRUE,
+#                  k = i)
+#   sil_width[i] <- pam_fit$silinfo$avg.width
+# }
+# 
+# plot(1:15, sil_width,
+#      xlab = "Número de cluster",
+#      ylab = "Silueta")
+# lines(1:15,sil_width)
+
+```
+
+**Seleccionando el k**
+
+![Seleccionando el k óptimo](k_optimo.png)
+
+
+
+
+
+```{r}
+# clusters_d <- hclust(dist_grid,method = "ward.D2")
+# cluster <- cutree(clusters_d, k=4)
+# 
+# BASE_cluster <- cbind(BASE, cluster)
+# 
+# pam_results <- BASE_cluster%>%
+#   dplyr::select(-cluster)%>%
+#   mutate(cluster=pam_fit$clustering)%>%
+#   group_by(cluster)%>%
+#   do(the_summary = summary(.))
+# 
+# 
+# pam_results$the_summary
+```
+
+## Gráfica del modelo
+
+
+
+```{r}
+# g1 <- ggplot(aes(x=X,y=Y),data=BASE_cluster_full)
+# g1+geom_point(aes(color=factor(cluster)))+
+#   ggtitle("")
+```
+
+
+
+![](PAM.png)
+
+
+
+
