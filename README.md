@@ -18,7 +18,6 @@ Tomando una muestra de clientes de una entidad bancaria, se quiere identificar s
 
 - Segmentar los clientes por su historial de transaccionalidad con la entidad
 - Estimar qué variables inciden en el aumento de la frecuencia de transacciones
-- Fortalecer estrategias de fidelización
 
 
 ## Modelamiento
