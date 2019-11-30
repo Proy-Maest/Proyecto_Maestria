@@ -37,7 +37,7 @@ Con el objetivo de identificar los grupos de personas y saber cuáles son las ca
 Detección y Remoción de Outliers
 Cómo parte del proceso del proyecto integrador y de los aprendizajes de las diferentes materias, es necesario detectar outliers en nuestros datos. Con respecto al uso de tarjetas de crédito y del modelo RFM, las variables que se usan son: la edad, total de transacciones y monto total de transacciones. A continuación se describe detalladamente el proceso en el que se incurre.
 
-
+![](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/6-Deteccion_Outliers/outliers.png)
 
 ## Modelamiento
 
