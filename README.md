@@ -26,11 +26,18 @@ Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas c
 
 ## Metodología
 Con el objetivo de identificar los grupos de personas y saber cuáles son las caractirísticas principales de los consumidores, se tiene en cuenta lo siguiente:
-
+- Detección de Outliers
 - Metodologia FMR
 - Segmetanción K- Means
 - Segmetanción K - Medoids (PAM )
 - Análisis de resultados por segmentos
+
+## Detección de Outliers
+
+Detección y Remoción de Outliers
+Cómo parte del proceso del proyecto integrador y de los aprendizajes de las diferentes materias, es necesario detectar outliers en nuestros datos. Con respecto al uso de tarjetas de crédito y del modelo RFM, las variables que se usan son: la edad, total de transacciones y monto total de transacciones. A continuación se describe detalladamente el proceso en el que se incurre.
+
+
 
 ## Modelamiento
 
