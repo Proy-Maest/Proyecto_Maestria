@@ -14,20 +14,51 @@ Actualmente el sistema financiero cuenta con una penetración de tarjetas de cr�
 
 Tomando una muestra de clientes de una entidad bancaria, se quiere identificar segmentos para desarrollar estrategias particulares dependiendo de las características de cada grupo. Estas estrategias pueden ser de fidelización a largo plazo, adquisición de nuevos servicios, aumento de frecuencia del uso de tarjeta de crédito, entre otras.
 
+## Argumentación
+Hoy en día para cualquier empresa, segmentar es una manera de dividir un problema en partes más sencillas que ayuda a priorizar esfuerzos y a localizar oportunidades de negocio.
+
+Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas capacidades adquisitivas por lo tanto, es importante entender e identificar valor de grupos de individuos.
+
 # Objetivo
 
 - Segmentar los clientes por su historial de transaccionalidad con la entidad
 - Estimar qué variables inciden en el aumento de la frecuencia de transacciones
 
+## Metodología
+Con el objetivo de identificar los grupos de personas y saber cuáles son las caractirísticas principales de los consumidores, se tiene en cuenta lo siguiente:
+
+- Metodologia FMR
+- Segmetanción K- Means
+- Segmetanción K - Medoids (PAM )
+- Análisis de resultados por segmentos
 
 ## Modelamiento
 
+## Segmentación FRM 
+
+![Definición 1](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/Piramide.png)
+
+RFM es uno de los métodos de segmentación de clientes más sencillos de implantar, y al mismo tiempo uno de los que mejores resultados aportan a corto plazo. Se basa en el célebre principio de Pareto, según la cual el 20% de los clientes de una compañía generan el 80% de los ingresos. El RFM es la mejor manera de constatar hasta qué punto este paradigma es real en nuestro caso, y ubicar a cada cliente en su escalón de la pirámide de valor.
+
+El análisis consiste en clasificar a los clientes por su valor en función de tres variables:
+
+- Recencia. Días transcurridos desde la última compra.
+
+- Frecuencia. Número de compras por período de tiempo, como promedio. Por ejemplo, número de compras mensuales.
+
+- Money. Valor de las compras totales realizadas por el cliente en el tiempo de análisis.
+
+## Construcción de percentiles
+Se construyen escalas, basadas en estas variables, dando a cada cliente un valor según el percentil en que se encuentra (percentiles = n grupos de igual tamaño, o cantidad de clientes). Lo más habitual es trabajar con 5 valores (quintiles), aunque no es raro el uso de 10 valores (deciles).
+
+Por ejemplo, un cliente que estuviera entre el 20% de los que más recientemente han comprado, en el 2do 20% por frecuencia de compra y el 4to 20% en valor total de compras, se le asignaría el segmento 124, (R)5 (F)4 (M)2. Lo vemos en el gráfico:
+
+ ![Definición 1](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/segmentos.png)
+ 
+ El gráfico siguiente muestra cómo se distribuye la venta de una enseña de comercio minorista, en función del segmento de valor monetario M al que pertenecen los clientes. Efectivamente, refleja la distribución 20/80.
+
+Referencia: https://www.unica360.com/analisis-rfm-en-retail-empezando-a-segmentar-clientes-i
 ## Segmentación mediante el uso de K-MEANS
-
-Hoy en día para cualquier empresa,  segmentar es una manera de dividir un problema en partes más sencillas que ayuda a priorizar esfuerzos y a localizar oportunidades de negocio.
-
-Se puede evidenciar que no todos los clientes son iguales ni tienen las mismas capacidades adquisitivas por lo tanto, es importante entender e identificar valor de grupos de individuos.
-
 **Definición**
 
 Segmentar es dividir una población en grupos homogéneos en función de necesidades, comportamientos, características o actitudes y caracterizar a los grupos resultantes para saber qué les distingue entre sí.
