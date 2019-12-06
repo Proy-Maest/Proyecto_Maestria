@@ -120,18 +120,10 @@ Para cada uno de los clusters creados, comprobar si seleccionando otra observaci
 
 ## Modelo adecuado
 
-Con el fin de encontrar un modelo indicado se prueba el modelo PAM (Partitioning Around Medoids), todos los modelos de segmentación tratan de resolver el mismo problema de minimizar una diferencia de distancias calculadas, este modelo es muy parecido al algoritmo de k-means la diferencia principal es que PAM está calculado con medioides mientras que K-medias lo hace sobre centroides.
-Partitioning Around Medoids:
- 
-•	Se calcula la distancia de las observaciones con la función Daisy:
- 
-Es una función que se utiliza cuando se tienen variables mixtas (numéricas y categóricas), donde la métrica con la cual se obtienen las distancias es “gower”, cada una de las observaciones se calcula así:
+El método de k-medoids presentó un mejor desempeño ya que comparado con k-means tuvo  la mínima distancia media.
 
-![Deisy function](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/daisy_funcion.png)
 
-•	Se minimiza una distancia:
-
-![Minimiza la distancia](https://github.com/Proy-Maest/Proyecto_Maestria/blob/Proy-Maest-patch-1/distancia_min.png)
+Dado que el objetivo del proyecto es encontrar eficazmente características importantes en los clientes para realizar una buena segmetanción, se investiga con el negocio cuáles comportamientos son mas comunes en los consumidores por lo tanto buscamos en cada  eslabón de la pirámide buscando caractisticas especiales, finalmente concluimos que por estrategia del negocio se escogen 4 grupos. (k=4).
 
 ## Resultados
 
@@ -141,26 +133,16 @@ Es una función que se utiliza cuando se tienen variables mixtas (numéricas y c
 
 **Referencia: https://rpubs.com/Joaquin_AR/310338**
 
-# Aplicación para el caso de estudio
+# Conclusiones
 
-Con la metodología K-Means se desea responder algunas preguntas de negocio que son importantes para la creación de estrategias para el aumento de valor de la compañia.
+- La identificación outliers permitió preparar  una base de datos  más  eficiente para la  implementación la metodología RFM
+- El uso de herramientas en la nube nos permitió generar una infraestructura adecuada para el manejo de grandes volúmenes de  datos, permitiendo la  escalabilidad del  problema.
+- El RFM es útil para segmentar los clientes de acuerdo a la fidelidad al medio de pago, sin embargo,  se queda corto  para medir  otras variables  propias de los tarjetahabientes
+- El método de k-medoids presentó un mejor desempeño ya que comparado con k-means tuvo  la mínima distancia media
+- Las características   expuestas  previamente no se  relacionan con un publico particular, sino con el contexto del cliente lo cual permitirá el diseño de  estrategias focalizadas que  permitan la migración entre las  categorías de la pirámide.​
+- Complementar modelos de segmentación estratégica con modelos enfocados en segmentaciones tácticas como k-medoids,  permite aproximarse  a un modelo básico de segmentación dinámica dado un cotexto.
+- Dado el dinamismo del medio de pago la aplicación de métodos de clusterización nos permite evidencia en el corto plazo​ el desplazamiento de los clientes en los diferentes eslabones de  fidelización.​
 
-Con K-Means se quiere responder los siguientes cuestionamientos.
 
-- Identificar el tipo de clientes
-- ¿Cuál es el medio de pago mas utilizado?
-- ¿Cuál es el canal mas utilizado?
-- ¿Cuáles son las características de los clientes que tienen mas transacciones en el año?
-- ¿Cuáles clientes son mas propensos en dejar de pagar con tarjeta?
-
-# Desarrollo
-
-Para realizar el modelo los clientes deben tener como mínimio una transacción acumulada  y luego se seleccionan las variables numéricas del dataset para la clusterización.
-
-Se segmentó de acuerdo a:
-- Edad
-- Rango Ingresos
-- Monto transado
-- Total trx acumuladas
 
 
